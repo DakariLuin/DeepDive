@@ -1,0 +1,5 @@
+.vscode/
+build/
+server/DeepDive.exe
+server/data
+libs/

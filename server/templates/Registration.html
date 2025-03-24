@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регестрация</title>
+    <link rel="stylesheet" href="../static/Fonts.css">
+    <link rel="stylesheet" href="../static/Styles.css">
+    <script src="../static/validator.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <h1 class="shadow">Deep Dive</h1>
+        <div class="card">
+            <h2>Регистрация</h2>
+            <form id="registration-form" action="#" method="POST">
+                <div class="input-group">
+                    <label for="username">Логин:</label>
+                    <input type="text" id="username" name="username" placeholder="Введите логин" required>
+                    <div class="error-message" id="username-error">Имя пользователя занято</div>
+                </div>
+                <div class="input-group">
+                    <label for="password">Пароль:</label>
+                    <input type="password" id="password" name="password" placeholder="Введите пароль" required>
+                    <div class="error-message" id="password-error">Пароль не менее 8 символов и содержащий цифры</div>
+                </div>
+                <div class="input-group">
+                    <label for="confirm-password">Повторите пароль:</label>
+                    <input type="password" id="confirm-password" name="confirm-password" placeholder="Введите пароль"
+                        required>
+                    <div class="error-message" id="confirm-password-error">Пароли не совпадают</div>
+                </div>
+                <button type="submit">Начать</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('registration-form');
+        const username = document.getElementById('username')
+        const usernameError = document.getElementById('username-error');
+        const passwordField = document.getElementById('password');
+        const passwordError = document.getElementById('password-error');
+        const confirmPasswordField = document.getElementById('confirm-password');
+        const confirmPasswordError = document.getElementById('confirm-password-error');
+
+
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // Валидация логина и пароля
+            isDataValid = true;
+            if (passwordField.value !== confirmPasswordField.value) {
+                confirmPasswordField.classList.add('error');
+                confirmPasswordError.style.display = 'block';
+                isDataValid = false;
+            } else {
+                confirmPasswordField.classList.remove('error');
+                confirmPasswordError.style.display = 'none';
+            }
+
+            if (!validateUsername(username.value)) {
+                username.classList.add('error');
+                usernameError.style.display = 'block';
+                isDataValid = false;
+            } else {
+                username.classList.remove('error');
+                usernameError.style.display = 'none';
+            }
+
+            if (!validatePassword(passwordField.value)) {
+                passwordField.classList.add('error');
+                passwordError.style.display = 'block';
+                isDataValid = false;
+            } else {
+                passwordField.classList.remove('error');
+                passwordError.style.display = 'none';
+            }
+
+            if (!isDataValid) {
+                return;
+            }
+
+            const data = {
+                username: username.value,
+                password: passwordField.value
+            };
+
+            try {
+                const response = await fetch('/api/createUser', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
+                });
+                const result = await response.json();
+                if (response.ok) {
+                    alert('Пользователь успешно создан!');
+                } else {
+                    alert('Ошибка: ' + result.message);
+                }
+            } catch (error) {
+                alert('Произошла ошибка при создании пользователя.');
+            }
+        });
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход</title>
+    <link rel="stylesheet" href="../static/Fonts.css">
+    <link rel="stylesheet" href="../static/Styles.css">
+    <script src="../static/validator.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <h1 class="shadow">Deep Dive</h1>
+        <div class="card">
+            <h2>Вход</h2>
+            <form id="login-form" action="#" method="POST">
+                <div class="input-group">
+                    <label for="username">Логин:</label>
+                    <input type="text" id="username" name="username" placeholder="Введите логин" required>
+                    <div class="error-message" id="username-error">Неверный логин или пароль</div>
+                </div>
+                <div class="input-group">
+                    <label for="password">Пароль:</label>
+                    <input type="password" id="password" name="password" placeholder="Введите пароль" required>
+                    <div class="error-message" id="password-error">Неверный логин или пароль</div>
+                </div>
+                <button type="submit">Войти</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('login-form');
+        const username = document.getElementById('username');
+        const passwordField = document.getElementById('password');
+        const usernameError = document.getElementById('username-error');
+        const passwordError = document.getElementById('password-error');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            let isDataValid = true;
+            username.classList.remove('error');
+            usernameError.style.display = 'none';
+            passwordField.classList.remove('error');
+            passwordError.style.display = 'none';
+
+            if (!validateUsername(username.value)) {
+                username.classList.add('error');
+                usernameError.style.display = 'block';
+                isDataValid = false;
+            }
+
+            if (!validatePassword(passwordField.value)) {
+                passwordField.classList.add('error');
+                passwordError.style.display = 'block';
+                isDataValid = false;
+            }
+
+            if (!isDataValid) {
+                return;
+            }
+
+            const data = {
+                username: username.value,
+                password: passwordField.value
+            };
+
+            try {
+                const response = await fetch('/api/authorization', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
+                });
+                const result = await response.json();
+
+                if (response.ok) {
+                    alert('Вход выполнен успешно!');
+                } else {
+                    username.classList.add('error');
+                    usernameError.style.display = 'block';
+                    passwordField.classList.add('error');
+                    passwordError.style.display = 'block';
+                }
+            } catch (error) {
+                alert('Произошла ошибка при входе.');
+            }
+        });
+    </script>
+</body>
+
+</html>
