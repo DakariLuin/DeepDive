@@ -45,10 +45,8 @@ private:
         std::string username;
         std::string password;
 
-        bool result;
-        result = server_.authorizationUser(username, password);
 
-        if (!result) {
+        if (!server_.authorizationUser(username, password)) {
             response["status"] = "error";
             response["message"] = "user is not authorizated";
             return crow::response(401, response);
@@ -70,6 +68,6 @@ public:
 
     void startApi() {
         CROW_ROUTE(server_.getApp(), "/api/createUser").methods("POST"_method)([this](const crow::request& req) { return createUser(req); });
-        CROW_ROUTE(server_.getApp(), "/api/authorizationUser").methods("POST"_method)([this](const crow::request& req) { return authorizationUser(req); });
+        CROW_ROUTE(server_.getApp(), "/api/authorization").methods("POST"_method)([this](const crow::request& req) { return authorizationUser(req); });
     }
 };
