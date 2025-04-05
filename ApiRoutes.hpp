@@ -7,16 +7,16 @@ private:
     Server& server_;
     crow::response createUser(const crow::request& req) {
         crow::json::wvalue response;
-        crow::json::rvalue json_data = crow::json::load(req.body);
+        crow::json::rvalue jsonData = crow::json::load(req.body);
 
         std::string username;
         std::string password;
-        int role = 0; // 0 - пользователь
 
+        int role = 0; // 0 - пользователь
         try
         {
-            username = json_data["username"].s();
-            password = json_data["password"].s();
+            username = jsonData["username"].s();
+            password = jsonData["password"].s();
         }
         catch (const std::exception& e)
         {

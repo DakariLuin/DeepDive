@@ -49,12 +49,13 @@ public:
                 password TEXT,
                 role INTEGER,
                 access_token TEXT,
-                refresh token TEXT
+                refresh_token TEXT
                 ))");
         }
         catch (const std::exception& e)
         {
-            std::cerr << e.what() << '\n';
+            std::cout << "Database error: " << e.what() << '\n';
+            std::exit(1);
         }
     }
 
@@ -121,7 +122,6 @@ public:
         std::string accessToken = generateToken(username, 3600);  // 1 час
         std::string refreshToken = generateToken(username, 604800); // 7 дней
 
-        // Записываем токены в БД
         SQLite::Statement query(db_, "UPDATE users SET access_token = ?, refresh_token = ? WHERE username = ?");
         query.bind(1, accessToken);
         query.bind(2, refreshToken);
