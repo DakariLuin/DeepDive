@@ -23,19 +23,19 @@ private:
             response["status"] = "error";
             response["message"] = "invalid format of username or password";
             std::cerr << e.what() << '\n';
-            return crow::response{ response };
+            return crow::response(400, response);
         }
 
         if (server_.createUser(username, password, role)) {
             response["status"] = "success";
             response["message"] = "user is created";
+            return crow::response(201, response);
         }
         else {
             response["status"] = "error";
             response["message"] = "user is not created";
+            return crow::response(409, response);
         }
-
-        return crow::response{ response };
     }
 
     crow::response authorizationUser(const crow::request& req) {
@@ -51,7 +51,7 @@ private:
         if (!result) {
             response["status"] = "error";
             response["message"] = "user is not authorizated";
-            return crow::response{ response };
+            return crow::response(401, response);
         }
 
         std::pair<std::string, std::string> tokens;
@@ -61,6 +61,8 @@ private:
         response["access_token"] = tokens.first;
         response["refresh_token"] = tokens.second;
 
+        return crow::response(200, response);
+    }
         return crow::response{ response };
     }
 public:
