@@ -45,6 +45,16 @@ private:
         std::string username;
         std::string password;
 
+        try {
+            username = json_data["username"].s();
+            password = json_data["password"].s();
+        }
+        catch (const std::exception& e) {
+            response["status"] = "error";
+            response["message"] = "invalid format of username or password";
+            std::cerr << e.what() << '\n';
+            return crow::response(400, response);
+        }
 
         if (!server_.authorizationUser(username, password)) {
             response["status"] = "error";
