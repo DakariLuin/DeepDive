@@ -27,6 +27,7 @@ private:
     Validator& validator_;
     SQLite::Database db_;
     std::string secretKey_;
+    std::string secretKeyPath_ = "data/secret.txt";
 
     std::string generateToken(const std::string& userId, int expiresInSeconds) {
         return jwt::create()
@@ -38,8 +39,22 @@ private:
             .sign(jwt::algorithm::hs256{ secretKey_ });
     }
 
+    void loadSecretKey(const std::string& filePath) {
+        std::ifstream file(filePath);
+        if (!file.is_open()) {
+            std::cout << "Error: cannot open secret key file: " << filePath << '\n';
+            std::exit(1);
+        }
+        std::getline(file, secretKey_);
+        if (secretKey_.empty()) {
+            std::cout << "Error: secret key file is empty: " << filePath << '\n';
+            std::exit(1);
+        }
+    }
+
 public:
     Server(const std::string& ip, const int port, Validator& validator, std::string dbPath) : ip_(ip), port_(port), validator_(validator), db_(dbPath, SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE) {
+        loadSecretKey(secretKeyPath_);
         try
         {
             db_.exec(R"(
@@ -131,6 +146,84 @@ public:
         return { accessToken, refreshToken };
     }
 
+    bool checkAccessToken(std::string username, std::string token) {
+        try {
+            std::string dbToken;
+            SQLite::Statement query(db_, "SELECT access_token FROM users WHERE username = ?");
+            query.bind(1, username);
+            if (query.executeStep()) {
+                dbToken = query.getColumn(0).getString();
+            }
+            else {
+                return false;
+            }
+
+            if (token != dbToken) {
+                return false;
+            }
+
+            auto decoded = jwt::decode(token);
+
+            auto expClaim = decoded.get_expires_at();
+            auto now = std::chrono::system_clock::now();
+            if (expClaim <= now) {
+                return false;
+            }
+
+            auto verifier = jwt::verify()
+                .allow_algorithm(jwt::algorithm::hs256{ secretKey_ })
+                .with_issuer("auth_server");
+
+            verifier.verify(decoded);
+
+            return true;
+        }
+        catch (const std::exception& e) {
+            std::cerr << "token cheking error: " << e.what() << std::endl;
+            return false;
+        }
+    }
+
+    std::pair<std::string, std::string> refreshAccesToken(std::string username, std::string refreshToken) {
+        SQLite::Statement query(db_, "SELECT access_token, refresh_token FROM users WHERE username = ?");
+        query.bind(1, username);
+
+        if (!query.executeStep()) {
+            std::cerr << "User not found." << std::endl;
+            return {}; // Возвращаем пустую пару, если пользователь не найден
+        }
+
+        std::string storedAccessToken = query.getColumn(0).getString();
+        std::string storedRefreshToken = query.getColumn(1).getString();
+
+        // Проверяем, если refresh token не совпадает
+        if (refreshToken != storedRefreshToken) {
+            std::cerr << "Invalid refresh token." << std::endl;
+            return {}; // Неверный refresh token
+        }
+
+        // Генерация нового access token
+        std::string newAccessToken;
+        if (checkAccessToken(username, storedAccessToken)) {
+            newAccessToken = storedAccessToken;  // Возвращаем действующий access token
+        }
+        else {
+            newAccessToken = generateToken(username, 3600);  // Новый access token на 1 час
+        }
+
+        // Генерация нового refresh token
+        std::string newRefreshToken = generateToken(username, 604800);  // Новый refresh token на 7 дней
+
+        // Обновляем базу данных с новым refresh token и access token
+        SQLite::Statement update(db_, "UPDATE users SET access_token = ?, refresh_token = ? WHERE username = ?");
+        update.bind(1, newAccessToken);
+        update.bind(2, newRefreshToken);
+        update.bind(3, username);
+        update.exec();
+
+        // Возвращаем пару с новым access и refresh токенами
+        return { newAccessToken, newRefreshToken };
+    }
 };
 
 void Server::runServer() {

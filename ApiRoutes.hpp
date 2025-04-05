@@ -71,13 +71,79 @@ private:
 
         return crow::response(200, response);
     }
+
+    crow::response checkAccessToken(const crow::request& req) {
+        crow::json::wvalue response;
+        crow::json::rvalue json_data = crow::json::load(req.body);
+
+        std::string username;
+        std::string token;
+
+        try
+        {
+            username = json_data["username"].s();
+            token = json_data["token"].s();
+        }
+        catch (const std::exception& e)
+        {
+            response["status"] = "error";
+            response["message"] = "invalid format of username or token";
+            std::cerr << e.what() << '\n';
+            return crow::response{ response };
+        }
+
+        if (!server_.checkAccessToken(username, token)) {
+            response["status"] = "error";
+            response["message"] = "invalid token";
+            return crow::response{ response };
+        }
+
+        response["status"] = "ok";
+        response["message"] = "token is valid";
         return crow::response{ response };
     }
+
+    crow::response refreshAccesToken(const crow::request& req) {
+        crow::json::wvalue response;
+        crow::json::rvalue json_data = crow::json::load(req.body);
+
+        std::string username;
+        std::string token;
+
+        try
+        {
+            username = json_data["username"].s();
+            token = json_data["token"].s();
+        }
+        catch (const std::exception& e)
+        {
+            response["status"] = "error";
+            response["message"] = "invalid format of username or token";
+            std::cerr << e.what() << '\n';
+            return crow::response{ response };
+        }
+
+        std::pair<std::string, std::string> tokens = server_.refreshAccesToken(username, token);
+
+        if (tokens.first.empty()) {
+            response["status"] = "error";
+            response["message"] = "invalid token";
+            return crow::response{ response };
+        }
+
+        response["status"] = "ok";
+        response["accessToken"] = tokens.first;
+        response["refreshToken"] = tokens.second;
+        return crow::response{ response };
+    }
+
 public:
     Api(Server& server) : server_(server) {}
 
     void startApi() {
         CROW_ROUTE(server_.getApp(), "/api/createUser").methods("POST"_method)([this](const crow::request& req) { return createUser(req); });
         CROW_ROUTE(server_.getApp(), "/api/authorization").methods("POST"_method)([this](const crow::request& req) { return authorizationUser(req); });
+        CROW_ROUTE(server_.getApp(), "/api/refreshAccesToken").methods("PUT"_method)([this](const crow::request& req) { return refreshAccesToken(req); });
+        CROW_ROUTE(server_.getApp(), "/api/checkToken").methods("PUT"_method)([this](const crow::request& req) { return checkAccessToken(req); });
     }
 };
