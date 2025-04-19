@@ -1,7 +1,7 @@
 // Подключаем заголовочные файлы
 #include "Server.hpp"
-#include "FrontendRoutes.hpp"
-#include "ApiRoutes.hpp"
+#include "FrontRouter.hpp"
+#include "ApiRouter.hpp"
 #include "Validator.hpp"
 
 // Настраиваем путь к статическим файлам
@@ -19,13 +19,7 @@ int main(int argc, char* argv[])
     std::string ip = argv[1];
     int port = std::stoi(argv[2]);
 
-    Server server(ip, port, validator, "data/data.db");
-
-    // Конфигурируем роуты
-    Api api(server);
-    api.startApi();
-    Front front(server);
-    front.startFront();
+    Server server(ip, port, validator);
 
     server.runServer();
     return 0;

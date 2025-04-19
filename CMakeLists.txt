@@ -20,5 +20,5 @@ link_directories(${CMAKE_SOURCE_DIR}/libs/build)
 add_library(bscrypt STATIC libs/bcrypt/bcrypt.cpp libs/bcrypt/blowfish.cpp)
 find_package(OpenSSL REQUIRED)
 
-add_executable(DeepDive main.cpp)
+add_executable(DeepDive main.cpp ApiRouter.cpp Services.cpp)
 target_link_libraries(DeepDive PRIVATE bscrypt SQLiteCpp sqlite3 Crow::Crow ws2_32 mswsock OpenSSL::SSL OpenSSL::Crypto)
