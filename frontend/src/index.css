@@ -1,0 +1,26 @@
+@import url("assets/Var.css");
+
+body {
+  font-family: var(--font-primary);
+  background: var(--background-color);
+  color: var(--text-color);
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  flex-direction: column;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  width: 100%;
+}
+
+#root {
+  width: 100%;
+  margin: 0 auto;
+}

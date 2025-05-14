@@ -1,0 +1,49 @@
+main {
+    width: 70%;
+    margin: 70px auto 0 auto;
+}
+
+.hero-section {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    transform: translateY(-10%);
+}
+
+.about-section {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.thanks-section {
+    height: 20vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.logo {
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    font-family: var(--font-secondary);
+    margin-top: 0;
+    margin-bottom: 30px;
+    text-align: center;
+    line-height: 1.3;
+}
+
+.logo.primary {
+    font-size: 6rem;
+    color: var(--accent-color);
+}
+
+.logo.secondary {
+    font-family: var(--font-primary);
+    font-size: 2rem;
+    color: var(--accent-color);
+}

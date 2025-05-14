@@ -1,0 +1,14 @@
+:root {
+    --primary-color: #62466B;
+    --accent-color: #BF9ACA;
+    --action-color: #FFC857;
+    --action-color-grad: #ff8f00;
+    /* --background-color: #45364B; */
+    --background-color: #3b2f4c;
+    --text-color: #D6D6D6;
+    --secondary-color: #326771;
+    --error-color: #FF5C5C;
+
+    --font-primary: 'Lora', sans-serif;
+    --font-secondary: 'Nodesto Cyrillic', sans-serif;
+}

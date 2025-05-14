@@ -1,0 +1,115 @@
+@import "../assets/Var.css";
+@import "../assets/Fonts.css";
+
+/* === HEADER === */
+header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+
+    background-color: var(--primary-color);
+    padding: 0;
+    color: var(--text-color);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    height: 70px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* === CONTAINER === */
+header .container {
+    width: 100%;
+    padding: 0 1rem;
+    box-sizing: border-box;
+    display: flex;
+    align-items: stretch;
+    height: 100%;
+    padding-right: 0;
+}
+
+/* === NAV === */
+header nav {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+    height: 100%;
+}
+
+/* === LEFT / RIGHT LINK BLOCKS === */
+.nav-links-left,
+.auth-links-right {
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+/* === RIGHT BLOCK WITH GRADIENT === */
+.auth-links-right {
+    background: linear-gradient(135deg, var(--action-color), var(--action-color-grad));
+    border-radius: 10px;
+    padding: 0 1rem;
+    color: var(--primary-color);
+    font-weight: bold;
+    font-size: 2rem;
+    transition:
+        background 0.4s ease,
+        transform 0.3s ease,
+        box-shadow 0.3s ease,
+        border-radius 0.3s ease;
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+
+}
+
+/* === LINKS === */
+header nav a {
+    color: var(--text-color);
+    text-decoration: none;
+    font-size: 1.1rem;
+    font-weight: bold;
+    transition: color 0.3s ease;
+    display: flex;
+    align-items: center;
+    height: 100%;
+    padding: 0 0.5rem;
+}
+
+
+/* === BUTTON INSIDE auth-links-right === */
+.auth-links-right button {
+    background: none;
+    border: none;
+    color: var(--primary-color);
+    font-weight: bold;
+    font-family: var(--font-primary);
+    font-size: 1.1rem;
+    margin-left: 1rem;
+    cursor: pointer;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    padding: 0 0.5rem;
+}
+
+.auth-links-right a {
+    color: var(--primary-color);
+}
+
+.auth-links-right:hover {
+    background: linear-gradient(135deg, var(--action-color), var(--action-color-grad));
+    transform: scale(1.05);
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(255, 200, 87, 0.5);
+}
+
+/* === HOVER EFFECTS === */
+header nav a:hover,
+.auth-links-right button:hover {
+    color: var(--accent-color);
+}
