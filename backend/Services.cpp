@@ -10,6 +10,7 @@
 #include "bcrypt/bcrypt.h"
 
 #include "Validator.hpp"
+#include <nlohmann/json.hpp>
 
 
 std::string  AuthService::generateToken(const std::string& userId, int expiresInSeconds) {

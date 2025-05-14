@@ -11,6 +11,7 @@
 #include "bcrypt/bcrypt.h"
 
 #include "Validator.hpp"
+#include <nlohmann/json.hpp>
 
 class AuthService {
 private:

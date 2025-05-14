@@ -13,6 +13,8 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../server)
 
 find_package(asio REQUIRED)
 find_package(Crow REQUIRED)
+find_package(nlohmann_json_schema_validator REQUIRED)
+
 
 include_directories(${CMAKE_SOURCE_DIR}/../libs) 
 link_directories(${CMAKE_SOURCE_DIR}/../libs/build)   
@@ -21,4 +23,4 @@ add_library(bscrypt STATIC ../libs/bcrypt/bcrypt.cpp ../libs/bcrypt/blowfish.cpp
 find_package(OpenSSL REQUIRED)
 
 add_executable(DeepDive main.cpp ApiRouter.cpp Services.cpp)
-target_link_libraries(DeepDive PRIVATE bscrypt SQLiteCpp sqlite3 Crow::Crow ws2_32 mswsock OpenSSL::SSL OpenSSL::Crypto)
+target_link_libraries(DeepDive PRIVATE bscrypt SQLiteCpp sqlite3 Crow::Crow ws2_32 mswsock OpenSSL::SSL OpenSSL::Crypto nlohmann_json_schema_validator)
