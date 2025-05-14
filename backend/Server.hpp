@@ -69,6 +69,23 @@ private:
             std::cerr << "Database error: " << e.what() << '\n';
             throw; // выбрасываем исключение, чтобы избежать дальнейших проблем
         }
+
+        try {
+            db_.exec(R"(
+                    CREATE TABLE IF NOT EXISTS files (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    owner INTEGER NOT NULL,
+                    filename TEXT NOT NULL,
+                    filepath TEXT NOT NULL,
+                    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                    is_shared BOOLEAN DEFAULT 0,
+                    shared_token TEXT UNIQUE
+                ))");
+        }
+        catch (const std::exception& e) {
+            std::cerr << "Database error: " << e.what() << '\n';
+            throw; // выбрасываем исключение, чтобы избежать дальнейших проблем
+        }
     }
 
 public:
