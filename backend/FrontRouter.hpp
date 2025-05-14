@@ -1,5 +1,7 @@
 #pragma once
 
+#include <crow.h>
+
 class Front {
 private:
     crow::SimpleApp& app_;

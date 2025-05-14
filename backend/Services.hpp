@@ -2,6 +2,7 @@
 
 #include <winsock2.h>
 #include <crow.h>
+#include <sys/stat.h>
 
 #include <sqlite3.h>
 #include <SQLiteCpp/SQLiteCpp.h>
@@ -21,7 +22,7 @@ private:
 public:
     AuthService(SQLite::Database& db, std::string secretKey);
     std::pair<std::string, std::string> generateTokens(const std::string& username);
-    bool checkAccessToken(std::string username, std::string token);
+    bool checkAccessToken(std::string token);
     std::pair<std::string, std::string> refreshAccesToken(std::string username, std::string refreshToken);
 };
 

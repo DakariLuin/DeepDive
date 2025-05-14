@@ -68,8 +68,7 @@ crow::response Api::authorizationUser(const crow::request& req) {
     return crow::response(200, response);
 }
 
-crow::response Api::checkAccessToken(const crow::request& req) {
-    crow::json::wvalue response;
+bool Api::checkAccessToken(const crow::request& req) {
     crow::json::rvalue json_data = crow::json::load(req.body);
 
     std::string username;
@@ -77,26 +76,18 @@ crow::response Api::checkAccessToken(const crow::request& req) {
 
     try
     {
-        username = json_data["username"].s();
         token = json_data["token"].s();
     }
     catch (const std::exception& e)
     {
-        response["status"] = "error";
-        response["message"] = "invalid format of username or token";
-        std::cerr << e.what() << '\n';
-        return crow::response{ response };
+        return false;
     }
 
-    if (!authService_.checkAccessToken(username, token)) {
-        response["status"] = "error";
-        response["message"] = "invalid token";
-        return crow::response{ response };
+    if (!authService_.checkAccessToken(token)) {
+        return false;
     }
 
-    response["status"] = "ok";
-    response["message"] = "token is valid";
-    return crow::response{ response };
+    return true;
 }
 
 crow::response Api::refreshAccesToken(const crow::request& req) {

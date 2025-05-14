@@ -37,8 +37,13 @@ std::pair<std::string, std::string> AuthService::generateTokens(const std::strin
     return { accessToken, refreshToken };
 }
 
-bool AuthService::checkAccessToken(std::string username, std::string token) {
+bool AuthService::checkAccessToken(std::string token) {
     try {
+        auto decoded = jwt::decode(token);
+
+        auto username = decoded.get_subject();
+        if (username.empty()) return false;
+
         std::string dbToken;
         SQLite::Statement query(db_, "SELECT access_token FROM users WHERE username = ?");
         query.bind(1, username);
@@ -49,17 +54,11 @@ bool AuthService::checkAccessToken(std::string username, std::string token) {
             return false;
         }
 
-        if (token != dbToken) {
-            return false;
-        }
-
-        auto decoded = jwt::decode(token);
+        if (token != dbToken) return false;
 
         auto expClaim = decoded.get_expires_at();
         auto now = std::chrono::system_clock::now();
-        if (expClaim <= now) {
-            return false;
-        }
+        if (expClaim <= now) return false;
 
         auto verifier = jwt::verify()
             .allow_algorithm(jwt::algorithm::hs256{ secretKey_ })
@@ -70,7 +69,7 @@ bool AuthService::checkAccessToken(std::string username, std::string token) {
         return true;
     }
     catch (const std::exception& e) {
-        std::cerr << "token cheking error: " << e.what() << std::endl;
+        std::cerr << "token checking error: " << e.what() << std::endl;
         return false;
     }
 }
@@ -95,7 +94,7 @@ std::pair<std::string, std::string> AuthService::refreshAccesToken(std::string u
 
     // Генерация нового access token
     std::string newAccessToken;
-    if (checkAccessToken(username, storedAccessToken)) {
+    if (checkAccessToken(storedAccessToken)) {
         newAccessToken = storedAccessToken;  // Возвращаем действующий access token
     }
     else {

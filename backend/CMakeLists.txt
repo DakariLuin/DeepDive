@@ -14,10 +14,10 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../server)
 find_package(asio REQUIRED)
 find_package(Crow REQUIRED)
 
-include_directories(${CMAKE_SOURCE_DIR}/libs) 
-link_directories(${CMAKE_SOURCE_DIR}/libs/build)   
+include_directories(${CMAKE_SOURCE_DIR}/../libs) 
+link_directories(${CMAKE_SOURCE_DIR}/../libs/build)   
 
-add_library(bscrypt STATIC libs/bcrypt/bcrypt.cpp libs/bcrypt/blowfish.cpp)
+add_library(bscrypt STATIC ../libs/bcrypt/bcrypt.cpp ../libs/bcrypt/blowfish.cpp)
 find_package(OpenSSL REQUIRED)
 
 add_executable(DeepDive main.cpp ApiRouter.cpp Services.cpp)
