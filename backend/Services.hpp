@@ -19,13 +19,14 @@ private:
     SQLite::Database& db_;
     std::string secretKey_;
 
-    std::string generateToken(const std::string& userId, int expiresInSeconds);
+    std::string generateToken(int userId, int expiresInSeconds);
 
 public:
     AuthService(SQLite::Database& db, std::string secretKey);
-    std::pair<std::string, std::string> generateTokens(const std::string& username);
+    std::pair<std::string, std::string> generateTokens(int userId);
     bool checkAccessToken(std::string token);
-    std::pair<std::string, std::string> refreshAccesToken(std::string username, std::string refreshToken);
+    std::pair<std::string, std::string> refreshAccesToken(std::string refreshToken);
+    int extractUserIdFromToken(const std::string& token);
 };
 
 class UserService {
@@ -34,12 +35,20 @@ private:
     Validator& validator_;
 public:
     UserService(SQLite::Database& db, Validator& validator);
-
+    int getUserId(const std::string& username);
     bool createUser(std::string username, std::string password, int role);
     bool authorizationUser(std::string username, std::string password);
     crow::response changeUsername(const crow::request& req);
     crow::response changeUserPassword(const crow::request& req);
     crow::response changeUserRole(const crow::request& req);
+    std::vector<std::string> getUserInfo(int userId);
+};
+
+
+struct FileInfo {
+    std::string character_name;
+    std::string file_name;
+    std::string image;
 };
 
 class FileService {
