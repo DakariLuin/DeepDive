@@ -16,12 +16,12 @@
 #include <nlohmann/json.hpp>
 #include <nlohmann/json-schema.hpp>
 
-
-std::string  AuthService::generateToken(const std::string& userId, int expiresInSeconds) {
+std::string  AuthService::generateToken(int userId, int expiresInSeconds) {
+    std::string id = std::to_string(userId);
     return jwt::create()
         .set_issuer("auth_server")
         .set_type("JWT")
-        .set_subject(userId)
+        .set_subject(id)
         .set_issued_at(std::chrono::system_clock::now())
         .set_expires_at(std::chrono::system_clock::now() + std::chrono::seconds{ expiresInSeconds })
         .sign(jwt::algorithm::hs256{ secretKey_ });
@@ -29,14 +29,14 @@ std::string  AuthService::generateToken(const std::string& userId, int expiresIn
 
 AuthService::AuthService(SQLite::Database& db, std::string secretKey) : db_(db), secretKey_(secretKey) {}
 
-std::pair<std::string, std::string> AuthService::generateTokens(const std::string& username) {
-    std::string accessToken = generateToken(username, 3600);  // 1 час
-    std::string refreshToken = generateToken(username, 604800); // 7 дней
+std::pair<std::string, std::string> AuthService::generateTokens(int userId) {
+    std::string accessToken = generateToken(userId, 3600);  // 1 час
+    std::string refreshToken = generateToken(userId, 604800); // 7 дней
 
-    SQLite::Statement query(db_, "UPDATE users SET access_token = ?, refresh_token = ? WHERE username = ?");
+    SQLite::Statement query(db_, "UPDATE users SET access_token = ?, refresh_token = ? WHERE id = ?");
     query.bind(1, accessToken);
     query.bind(2, refreshToken);
-    query.bind(3, username);
+    query.bind(3, userId);
     query.exec();
 
     return { accessToken, refreshToken };
@@ -50,7 +50,7 @@ bool AuthService::checkAccessToken(std::string token) {
         if (username.empty()) return false;
 
         std::string dbToken;
-        SQLite::Statement query(db_, "SELECT access_token FROM users WHERE username = ?");
+        SQLite::Statement query(db_, "SELECT access_token FROM users WHERE id = ?");
         query.bind(1, username);
         if (query.executeStep()) {
             dbToken = query.getColumn(0).getString();
@@ -79,44 +79,72 @@ bool AuthService::checkAccessToken(std::string token) {
     }
 }
 
-std::pair<std::string, std::string> AuthService::refreshAccesToken(std::string username, std::string refreshToken) {
-    SQLite::Statement query(db_, "SELECT access_token, refresh_token FROM users WHERE username = ?");
-    query.bind(1, username);
+int AuthService::extractUserIdFromToken(const std::string& token) {
+    try {
+        auto decoded = jwt::decode(token);
+        std::string sub = decoded.get_subject();
+
+        if (sub.empty()) {
+            throw std::runtime_error("Пустой subject в токене");
+        }
+
+        try {
+            return std::stoi(sub);
+        }
+        catch (const std::exception& e) {
+            throw std::runtime_error(std::string("Ошибка преобразования subject в int: ") + e.what());
+        }
+    }
+    catch (const std::exception& e) {
+        std::cerr << "Ошибка при извлечении user ID из токена: " << e.what() << std::endl;
+        throw;
+    }
+}
+
+std::pair<std::string, std::string> AuthService::refreshAccesToken(std::string refreshToken) {
+    int userId;
+
+    try {
+        jwt::decoded_jwt decoded = jwt::decode(refreshToken);
+        userId = std::stoi(decoded.get_subject());
+    }
+    catch (const std::exception& e) {
+        std::cerr << "Invalid JWT: " << e.what() << std::endl;
+        return {};
+    }
+
+    SQLite::Statement query(db_, "SELECT access_token, refresh_token FROM users WHERE id = ?");
+    query.bind(1, userId);
 
     if (!query.executeStep()) {
         std::cerr << "User not found." << std::endl;
-        return {}; // Возвращаем пустую пару, если пользователь не найден
+        return {};
     }
 
     std::string storedAccessToken = query.getColumn(0).getString();
     std::string storedRefreshToken = query.getColumn(1).getString();
 
-    // Проверяем, если refresh token не совпадает
     if (refreshToken != storedRefreshToken) {
         std::cerr << "Invalid refresh token." << std::endl;
-        return {}; // Неверный refresh token
+        return {};
     }
 
-    // Генерация нового access token
     std::string newAccessToken;
     if (checkAccessToken(storedAccessToken)) {
-        newAccessToken = storedAccessToken;  // Возвращаем действующий access token
+        newAccessToken = storedAccessToken;
     }
     else {
-        newAccessToken = generateToken(username, 3600);  // Новый access token на 1 час
+        newAccessToken = generateToken(userId, 3600);
     }
 
-    // Генерация нового refresh token
-    std::string newRefreshToken = generateToken(username, 604800);  // Новый refresh token на 7 дней
+    std::string newRefreshToken = generateToken(userId, 604800);
 
-    // Обновляем базу данных с новым refresh token и access token
-    SQLite::Statement update(db_, "UPDATE users SET access_token = ?, refresh_token = ? WHERE username = ?");
+    SQLite::Statement update(db_, "UPDATE users SET access_token = ?, refresh_token = ? WHERE id = ?");
     update.bind(1, newAccessToken);
     update.bind(2, newRefreshToken);
-    update.bind(3, username);
+    update.bind(3, userId);
     update.exec();
 
-    // Возвращаем пару с новым access и refresh токенами
     return { newAccessToken, newRefreshToken };
 }
 
