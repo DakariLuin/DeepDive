@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import './Header.css';
 import { useNavigate } from 'react-router-dom';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function Header() {
     const isAuthenticated = !!localStorage.getItem('access_token');
@@ -17,9 +18,9 @@ function Header() {
             <div className="container">
                 <nav>
                     <div className="nav-links-left">
-                        <Link to="/">Главная</Link>
-                        <a href="#about">О проекте</a>
-                        <a href="#thanks">Благодарности</a>
+                        <Link to={{ pathname: '/', hash: '#top' }}>Главная</Link>
+                        <Link to={{ pathname: '/', hash: '#about' }}>О проекте</Link>
+                        <Link to={{ pathname: '/', hash: '#thanks' }}>Благодарности</Link>
                     </div>
 
                     <div className="auth-links-right">

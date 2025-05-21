@@ -1,7 +1,6 @@
 @import "../assets/Var.css";
 @import "../assets/Fonts.css";
 
-/* === HEADER === */
 header {
     position: fixed;
     top: 0;
@@ -19,7 +18,6 @@ header {
     align-items: center;
 }
 
-/* === CONTAINER === */
 header .container {
     width: 100%;
     padding: 0 1rem;
@@ -30,7 +28,6 @@ header .container {
     padding-right: 0;
 }
 
-/* === NAV === */
 header nav {
     width: 100%;
     display: flex;
@@ -39,7 +36,6 @@ header nav {
     height: 100%;
 }
 
-/* === LEFT / RIGHT LINK BLOCKS === */
 .nav-links-left,
 .auth-links-right {
     display: flex;
@@ -47,7 +43,6 @@ header nav {
     height: 100%;
 }
 
-/* === RIGHT BLOCK WITH GRADIENT === */
 .auth-links-right {
     background: linear-gradient(135deg, var(--action-color), var(--action-color-grad));
     border-radius: 10px;
@@ -67,7 +62,6 @@ header nav {
 
 }
 
-/* === LINKS === */
 header nav a {
     color: var(--text-color);
     text-decoration: none;
@@ -80,8 +74,6 @@ header nav a {
     padding: 0 0.5rem;
 }
 
-
-/* === BUTTON INSIDE auth-links-right === */
 .auth-links-right button {
     background: none;
     border: none;
@@ -103,12 +95,10 @@ header nav a {
 
 .auth-links-right:hover {
     background: linear-gradient(135deg, var(--action-color), var(--action-color-grad));
-    transform: scale(1.05);
     border-radius: 10px;
     box-shadow: 0 4px 15px rgba(255, 200, 87, 0.5);
 }
 
-/* === HOVER EFFECTS === */
 header nav a:hover,
 .auth-links-right button:hover {
     color: var(--accent-color);

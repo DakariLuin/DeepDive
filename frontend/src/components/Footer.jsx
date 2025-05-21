@@ -4,7 +4,7 @@ function Footer() {
     return (
         <footer>
             <div className="container">
-                <p>DakariLuin 2025. CC BY-NC.</p>
+                <p>DakariLuin 2025. CC BY-NC-SA.</p>
             </div>
         </footer>
     );
