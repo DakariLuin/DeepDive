@@ -1,0 +1,23 @@
+.viewer-mode input[type="text"],
+.viewer-mode input[type="number"],
+.viewer-mode textarea {
+    border: none;
+    background-color: transparent;
+}
+
+.viewer-mode input[type="checkbox"]:disabled {
+    opacity: 0.6;
+}
+
+.viewer-mode .add-attack-btn,
+.viewer-mode .remove-attack-btn {
+    display: none;
+}
+
+.viewer-mode .attack-header {
+    grid-template-columns: 1fr 1fr 1fr;
+}
+
+.viewer-mode .attack-entry {
+    grid-template-columns: 1fr 1fr 1fr;
+}
