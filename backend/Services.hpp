@@ -12,6 +12,7 @@
 
 #include "Validator.hpp"
 #include <nlohmann/json.hpp>
+#include <vector>
 
 class AuthService {
 private:
@@ -49,18 +50,21 @@ private:
     const int port_;
     const std::string ip_;
     nlohmann::json schema_;
-    std::string schemaPath_ = "data/schema";
+    std::string schemaPath_ = "./data/schema";
 
     std::string generateShareToken();
     std::string getFilePath(int fileid);
     bool isFileOwner(int fileid, int userid);
+    nlohmann::json generateTemplateCharacterList(const nlohmann::json& schema);
 public:
     FileService(const std::string& ip, int port, SQLite::Database& db, Validator& validator);
     bool createUserFolder(std::string username);
-    int createNewFile(int userId, const std::string& filename, const std::string& content);
+    int createNewFile(int userId);
     bool deleteFile(int fileid, int userid);
     bool editFile(int fileid, const std::string& newContent, int userid);
-    std::string createSharingURL(int fileid, int userid);
+    std::string getSharingToken(int fileid, int userid);
+    int getFileIdBySharingToken(std::string shareToken);
+    bool updateFilename(int fileId, std::string newCharacterName);
     std::string getFileContent(const int userid, int fileId);
-    std::string getAllUserFiles(const int userid, int fileId);
+    std::vector<FileInfo> getAllUserFiles(const int userid);
 };

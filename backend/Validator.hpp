@@ -2,6 +2,8 @@
 #include <string>
 #include <regex>
 #include <iostream>
+#include <nlohmann/json.hpp>
+#include <nlohmann/json-schema.hpp>
 
 enum Status
 {
@@ -108,5 +110,26 @@ public:
     {
         const std::regex patternPassword("^(?=.*[a-zA-Z])(?=.*\\d)[a-zA-Z0-9$#%&*]{8,64}$");
         return std::regex_match(password, patternPassword);
+    }
+
+    bool validateContent(const std::string& content, const nlohmann::json& schema) {
+        try {
+            nlohmann::json data = nlohmann::json::parse(content);
+            // std::cout << schema;
+            // std::cout << "\n\n\n\n";
+            // std::cout << content;
+            // Подготовка валидатора 
+            nlohmann::json_schema::json_validator  validator;
+            validator.set_root_schema(schema);
+
+            // Валидация
+            validator.validate(data);
+
+            return true;
+        }
+        catch (const std::exception& e) {
+            std::cerr << "error: " << e.what() << '\n';
+            return false;
+        }
     }
 };

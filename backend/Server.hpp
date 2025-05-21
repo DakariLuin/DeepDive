@@ -52,7 +52,7 @@ private:
         validator_(validator),
         db_(std::move(db)),
         secretKey_(secretKey),
-        api(app_, db_, secretKey_, validator_)
+        api(app_, db_, secretKey_, validator_, ip, port)
     {
         try {
             db_.exec(R"(
