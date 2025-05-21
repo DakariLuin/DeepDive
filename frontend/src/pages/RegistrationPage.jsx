@@ -34,82 +34,65 @@ function RegistrationPage() {
         }
     };
 
-    // Состояние для полей ввода
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
 
-    // Состояние для отображения ошибок
-    const [usernameError, setUsernameError] = useState(''); // Сообщение об ошибке или пустая строка
+    const [usernameError, setUsernameError] = useState('');
     const [passwordError, setPasswordError] = useState('');
     const [confirmPasswordError, setConfirmPasswordError] = useState('');
 
-    // Состояние для кнопки (например, чтобы отключить ее во время отправки)
     const [isSubmitting, setIsSubmitting] = useState(false);
 
 
-    // Обработчик изменения для поля Логин
     const handleUsernameChange = (event) => {
         setUsername(event.target.value);
-        // Очищаем ошибку при изменении поля (опционально, но удобно)
         if (usernameError) setUsernameError('');
     };
 
-    // Обработчик изменения для поля Пароль
     const handlePasswordChange = (event) => {
         setPassword(event.target.value);
         if (passwordError) setPasswordError('');
     };
 
-    // Обработчик изменения для поля Повторите пароль
     const handleConfirmPasswordChange = (event) => {
         setConfirmPassword(event.target.value);
         if (confirmPasswordError) setConfirmPasswordError('');
     };
 
 
-    // Обработчик отправки формы
     const handleSubmit = async (event) => {
-        event.preventDefault(); // Предотвращаем стандартную отправку формы браузером
-
-        // Сбрасываем все предыдущие ошибки перед новой валидацией
+        event.preventDefault();
         setUsernameError('');
         setPasswordError('');
         setConfirmPasswordError('');
 
-        let isValid = true; // Флаг общей валидации
+        let isValid = true;
 
-        // --- Валидация ---
-        // 1. Пароли совпадают?
         if (password !== confirmPassword) {
             setConfirmPasswordError('Пароли не совпадают');
             isValid = false;
         }
 
-        // 2. Валидация логина
         if (!validateUsername(username)) {
-            setUsernameError('Введите корректный логин (например, не менее 3 символов)'); // Адаптируй сообщение
+            setUsernameError('Неменее 3 символов');
             isValid = false;
         }
 
-        // 3. Валидация пароля
         if (!validatePassword(password)) {
-            setPasswordError('Пароль не менее 8 символов и содержащий цифры'); // Адаптируй сообщение
+            setPasswordError('Пароль не менее 8 символов и содержащий цифры');
             isValid = false;
         }
 
-        // Если валидация не прошла, останавливаемся
         if (!isValid) {
-            // Ошибки уже установлены через setState
             return;
         }
 
-        // Если валидация прошла, отправляем данные на сервер
-        setIsSubmitting(true); // Включаем состояние отправки
+        setIsSubmitting(true);
 
         const data = {
             username: username,
-            password: password, // Отправляем пароль (ваш API его хеширует)
+            password: password,
         };
 
         try {
