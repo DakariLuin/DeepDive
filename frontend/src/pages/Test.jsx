@@ -10,11 +10,44 @@ function TokenChecker() {
             const response = await fetch(`${API_BASE_URL}/protected`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ token }) // username убран
+                body: JSON.stringify({ token: token })
             });
 
-            const text = await response.text();
-            setResult(text);
+            if (response.ok) {
+                const text = await response.text();
+                setResult(text);
+            } else {
+                const refreshToken = localStorage.getItem('refresh_token');
+                if (!refreshToken) {
+                    setResult('Токен недействителен, и refresh_token отсутствует.');
+                    return;
+                }
+
+                const refreshResponse = await fetch(`${API_BASE_URL}/refreshToken`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ token: refreshToken })
+                });
+
+                if (refreshResponse.ok) {
+                    const data = await refreshResponse.json();
+                    const newAccessToken = data.access_token;
+                    setToken(newAccessToken);
+                    localStorage.setItem('access_token', newAccessToken);
+
+                    const retryResponse = await fetch(`${API_BASE_URL}/protected`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ token: newAccessToken })
+                    });
+
+                    const retryText = await retryResponse.text();
+                    setResult(retryText);
+                } else {
+                    const errText = await refreshResponse.text();
+                    setResult('Ошибка refresh: ' + errText);
+                }
+            }
         } catch (error) {
             setResult('Ошибка при проверке токена: ' + error.message);
         }
