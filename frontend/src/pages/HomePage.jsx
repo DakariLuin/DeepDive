@@ -1,27 +1,40 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Header from '../components/Header';
-import Footer from '../components/footer';
+import Footer from '../components/Footer';
 import '../assets/Fonts.css';
 import './HomePage.css';
+import { useLocation } from 'react-router-dom';
 
 function HomePage() {
+    const location = useLocation();
+    useEffect(() => {
+        if (location.hash) {
+            const id = location.hash.substring(1);
+            const element = document.getElementById(id);
+
+            if (element) {
+                setTimeout(() => {
+                    element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 0);
+            }
+        }
+    }, [location]);
+
     return (
         <>
             <Header />
             <main>
-                <section className="hero-section"> {/* Добавь стили для этого класса в Styles.css */}
-                    <div className="container"> {/* Переиспользуем класс контейнера */}
-                        <h1 className="logo primary">Deep Dive</h1> {/* Заголовок приложения */}
+                <section className="hero-section" id="top">
+                    <div className="container">
+                        <h1 className="logo primary">Deep Dive</h1>
                         <h1 className="logo secondary">Сайт для создания проработанных персонажей!</h1> {/* Подзаголовок */}
                     </div>
                 </section>
 
-                {/* Секция Описание (About) */}
-                {/* Добавляем id="about" для ссылки из хедера */}
-                <section id="about" className="about-section"> {/* Добавь стили для этого класса */}
+                <section id="about" className="about-section">
                     <div className="container">
-                        <h2>О проекте</h2> {/* Заголовок секции */}
-                        <p>Здесь будет подробное описание проекта, его целей и возможностей. Lorem ipsum dolor sit amet... </p>
+                        <h2>О проекте</h2>
+                        <p>Deep Dive - это сервер для хранения и редактирования листов персонажей для днд пятой редакции </p>
                         <p>Здесь будет подробное описание проекта, его целей и возможностей. Lorem ipsum dolor sit amet... </p>
                         <p>Здесь будет подробное описание проекта, его целей и возможностей. Lorem ipsum dolor sit amet... </p>
                         <p>Здесь будет подробное описание проекта, его целей и возможностей. Lorem ipsum dolor sit amet... </p>
@@ -34,17 +47,13 @@ function HomePage() {
                     </div>
                 </section>
 
-                {/* Секция Благодарности (Acknowledgements) */}
-                {/* Добавляем id="thanks" для ссылки из хедера */}
-                <section id="thanks" className="thanks-section"> {/* Добавь стили для этого класса */}
+                <section id="thanks" className="thanks-section">
                     <div className="container">
-                        <h2>Особые благодарности</h2> {/* Заголовок секции */}
+                        <h2>Особые благодарности</h2>
                         <p>Спасибо всем, кто помог в разработке! Отдельная благодарность [Имя 1], [Имя 2] и т.д. ...</p>
                     </div>
                 </section>
             </main>
-
-            {/* Вставляем компонент Футера */}
             <Footer />
         </>
     );

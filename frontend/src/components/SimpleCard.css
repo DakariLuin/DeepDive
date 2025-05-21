@@ -12,10 +12,11 @@
 
 .card {
     background-color: var(--accent-color);
-    padding: 40px;
+    padding: 40px 60px;
+    margin: 10px;
     border-radius: 20px;
     text-align: center;
-    width: 100%;
+    display: inline-block;
     max-width: 400px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
     transition: box-shadow 0.3s ease, transform 0.3s ease;
